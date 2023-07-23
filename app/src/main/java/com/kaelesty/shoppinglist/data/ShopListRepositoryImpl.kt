@@ -10,6 +10,16 @@ object ShopListRepositoryImpl: ShopListRepository {
     private val shopList: MutableLiveData<List<ShopItem>> = MutableLiveData()
     private var autoIncrement = 0
 
+    init {
+        for (i in 0..10) {
+            addShopItem(ShopItem(
+                "ShopItem #$i",
+                i,
+                true
+            ))
+        }
+    }
+
     override fun addShopItem(shopItem: ShopItem) {
         shopItem.id = autoIncrement
         autoIncrement++
