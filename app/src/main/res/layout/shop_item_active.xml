@@ -9,21 +9,21 @@
     app:cardElevation="4dp"
     >
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_height="match_parent"
         android:padding="8dp"
         >
 
         <TextView
             android:id="@+id/textViewShopItemTitle"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Shop Item!"
             android:textSize="18sp"
-            android:layout_weight="1"
             android:textColor="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             />
         <TextView
             android:id="@+id/textViewShopItemQuanity"
@@ -32,9 +32,11 @@
             tools:text="999"
             android:textSize="18sp"
             android:textColor="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             />
 
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
