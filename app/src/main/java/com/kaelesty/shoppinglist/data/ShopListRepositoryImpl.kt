@@ -1,34 +1,47 @@
 package com.kaelesty.shoppinglist.data
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.kaelesty.shoppinglist.domain.ShopItem
 import com.kaelesty.shoppinglist.domain.ShopListRepository
 
 object ShopListRepositoryImpl: ShopListRepository {
 
-    private val shopList: ArrayList<ShopItem> = ArrayList()
+    private val shopList: MutableLiveData<List<ShopItem>> = MutableLiveData()
     private var autoIncrement = 0
 
     override fun addShopItem(shopItem: ShopItem) {
         shopItem.id = autoIncrement
         autoIncrement++
-        shopList.add(shopItem)
+        val newShopList = shopList.value
+        newShopList as MutableList
+        newShopList.add(shopItem)
+        shopList.value = newShopList
     }
 
-    override fun getShopList(): List<ShopItem> {
-        return shopList.toList()
+    override fun getShopList(): LiveData<List<ShopItem>> {
+        return shopList
     }
 
     override fun getShopItemById(id: Int): ShopItem {
-        return shopList.find { it.id == id } ?: throw ArrayStoreException()
+        val newShopList = shopList.value
+        return newShopList?.find { it.id == id } ?:
+        throw RuntimeException("Shop item wasn't found (by id)")
     }
 
     override fun editShopItem(shopItem: ShopItem) {
-        val oldElem = shopList.find { it.id == shopItem.id } ?: throw ArrayStoreException()
-        shopList.remove(oldElem)
-        shopList.add(shopItem)
+        val newShopList = shopList.value
+        newShopList as MutableList
+        val oldElem = getShopItemById(shopItem.id)
+        newShopList.remove(oldElem)
+        newShopList.add(shopItem)
+        shopList.value = newShopList
     }
 
     override fun delShopItem(shopItem: ShopItem) {
-        shopList.remove(shopItem)
+        val newShopList = shopList.value
+        newShopList as MutableList
+        newShopList.remove(shopItem)
+        shopList.value = newShopList
     }
 }
