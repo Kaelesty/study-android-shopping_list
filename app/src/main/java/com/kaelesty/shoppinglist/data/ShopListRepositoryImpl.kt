@@ -13,11 +13,11 @@ object ShopListRepositoryImpl: ShopListRepository {
 
     init {
         shopList.value = ArrayList<ShopItem>()
-        for (i in 0..100) {
+        for (i in 0..10) {
             addShopItem(ShopItem(
                 "ShopItem #$i",
                 i,
-                Random.nextBoolean()
+                true
             ))
         }
     }
@@ -28,6 +28,7 @@ object ShopListRepositoryImpl: ShopListRepository {
         val newShopList = shopList.value
         newShopList as MutableList
         newShopList.add(shopItem)
+        newShopList.sortBy { it.id }
         shopList.value = newShopList
     }
 
@@ -47,6 +48,7 @@ object ShopListRepositoryImpl: ShopListRepository {
         val oldElem = getShopItemById(shopItem.id)
         newShopList.remove(oldElem)
         newShopList.add(shopItem)
+        newShopList.sortBy { it.id }
         shopList.value = newShopList
     }
 
@@ -54,6 +56,7 @@ object ShopListRepositoryImpl: ShopListRepository {
         val newShopList = shopList.value
         newShopList as MutableList
         newShopList.remove(shopItem)
+        newShopList.sortBy { it.id }
         shopList.value = newShopList
     }
 }

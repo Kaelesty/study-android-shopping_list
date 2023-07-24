@@ -27,11 +27,11 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    private fun delShopItem(shopItem: ShopItem) {
+    fun delShopItem(shopItem: ShopItem) {
         delShopItemUseCase.delShopItem(shopItem)
     }
 
-    private fun switchShopItemActivation(shopItem: ShopItem) {
+    fun switchShopItemActivation(shopItem: ShopItem) {
         val newShopItem = shopItem.copy(isActive = !shopItem.isActive)
         editShopItemUseCase.editShopItem(newShopItem)
     }
