@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.motion.widget.OnSwipe
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.kaelesty.shoppinglist.R
@@ -12,18 +14,22 @@ import com.kaelesty.shoppinglist.databinding.ShopItemActiveBinding
 import com.kaelesty.shoppinglist.databinding.ShopItemUnactiveBinding
 import com.kaelesty.shoppinglist.domain.ShopItem
 
-class ShopListAdapter: Adapter<ShopListAdapter.ShopItemViewHolder>() {
+class ShopListAdapter: ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder>(
+
+    object: DiffUtil.ItemCallback<ShopItem>() {
+        override fun areItemsTheSame(oldItem: ShopItem, newItem: ShopItem)
+            = oldItem.id == newItem.id
+
+        override fun areContentsTheSame(oldItem: ShopItem, newItem: ShopItem)
+            = oldItem == newItem
+    }
+
+) {
 
     companion object {
         val VIEW_TYPE_ACTIVE = R.layout.shop_item_active
         val VIEW_TYPE_UNACTIVE = R.layout.shop_item_unactive
     }
-
-    var shopList: List<ShopItem> = ArrayList()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
 
     var onLongClick: ((ShopItem) -> Unit)? = null
     var onClick: ((ShopItem) -> Unit)? = null
@@ -38,12 +44,9 @@ class ShopListAdapter: Adapter<ShopListAdapter.ShopItemViewHolder>() {
         )
     }
 
-    override fun getItemCount(): Int {
-        return shopList.size
-    }
 
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
-        val shopItem = shopList[position]
+        val shopItem = currentList[position]
         holder.textViewTitle.text = shopItem.name
         holder.textViewQuanity.text = shopItem.quanity.toString()
 
@@ -62,6 +65,10 @@ class ShopListAdapter: Adapter<ShopListAdapter.ShopItemViewHolder>() {
 
     }
 
+    fun setData(newData: List<ShopItem>) {
+        submitList(newData)
+    }
+
     inner class ShopItemViewHolder(itemView: View): ViewHolder(itemView) {
 
         val view = itemView
@@ -70,6 +77,6 @@ class ShopListAdapter: Adapter<ShopListAdapter.ShopItemViewHolder>() {
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (shopList[position].isActive) VIEW_TYPE_ACTIVE else VIEW_TYPE_UNACTIVE
+        return if (currentList[position].isActive) VIEW_TYPE_ACTIVE else VIEW_TYPE_UNACTIVE
     }
 }
