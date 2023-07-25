@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             onClick = {
-                TODO("Switch to edit activity")
+                startActivity(ShopItemActivity.newIntent(this@MainActivity))
             }
         }
 
