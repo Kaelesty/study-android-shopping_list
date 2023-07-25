@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.loadShopList(this)
 
         viewModel.shopList.observe(this) {
-            adapter.setData(it)
+            adapter.setData(it.toMutableList())
         }
     }
 
