@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             onClick = {
-                TODO("Switch to edit activity")
+                // TODO("Switch to edit activity")
             }
         }
 
@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.loadShopList(this)
 
         viewModel.shopList.observe(this) {
-            adapter.shopList = it
+            adapter.setData(it)
         }
     }
 
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    viewModel.delShopItem(adapter.shopList[viewHolder.adapterPosition])
+                    viewModel.delShopItem(adapter.currentList[viewHolder.adapterPosition])
                 }
             }
         )

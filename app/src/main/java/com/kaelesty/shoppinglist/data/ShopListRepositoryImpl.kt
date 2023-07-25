@@ -13,7 +13,7 @@ object ShopListRepositoryImpl: ShopListRepository {
 
     init {
         shopList.value = ArrayList<ShopItem>()
-        for (i in 0..10) {
+        for (i in 0..100) {
             addShopItem(ShopItem(
                 "ShopItem #$i",
                 i,
