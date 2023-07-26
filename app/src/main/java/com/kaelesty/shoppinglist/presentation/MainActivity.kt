@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.kaelesty.shoppinglist.R
 import com.kaelesty.shoppinglist.databinding.ActivityMainBinding
 
@@ -17,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: ShopListAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var itemTouchHelper: ItemTouchHelper
+    private lateinit var buttonAddShopItem: FloatingActionButton
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,6 +28,14 @@ class MainActivity : AppCompatActivity() {
         initViewModel()
         initItemTouchHelper()
         initRecycler()
+        initButton()
+    }
+
+    private fun initButton() {
+        buttonAddShopItem = findViewById(R.id.floatingAddShopItem)
+        buttonAddShopItem.setOnClickListener {
+            startActivity(ShopItemActivity.newIntent(this@MainActivity, null))
+        }
     }
 
     private fun initRecycler() {
@@ -37,7 +47,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             onClick = {
-                startActivity(ShopItemActivity.newIntent(this@MainActivity))
+                startActivity(ShopItemActivity.newIntent(this@MainActivity, it.id))
             }
         }
 
@@ -53,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.loadShopList(this)
 
         viewModel.shopList.observe(this) {
-            adapter.shopList = it
+            adapter.submitList(it.toMutableList())
         }
     }
 
@@ -70,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    viewModel.delShopItem(adapter.shopList[viewHolder.adapterPosition])
+                    viewModel.delShopItem(adapter.currentList[viewHolder.adapterPosition])
                 }
             }
         )
