@@ -21,27 +21,34 @@ import java.lang.Exception
 class ShopItemViewModel(application: Application, val shopItem: ShopItem?) : AndroidViewModel(application) {
 
 
-    val nameError: MutableLiveData<Boolean> = MutableLiveData()
-    val quanityError: MutableLiveData<Boolean> = MutableLiveData()
+    private val _nameError: MutableLiveData<Boolean> = MutableLiveData()
+    val nameError: LiveData<Boolean> get() = _nameError as LiveData<Boolean>
 
-    val quanityToShow: MutableLiveData<String> = MutableLiveData()
-    val nameToShow: MutableLiveData<String> = MutableLiveData()
+    private val _quanityError: MutableLiveData<Boolean> = MutableLiveData()
+    val quanityError: LiveData<Boolean> get() = _quanityError as LiveData<Boolean>
 
-    val shouldFinish: MutableLiveData<Boolean> = MutableLiveData()
+    private val _quanityToShow: MutableLiveData<String> = MutableLiveData()
+    val quanityToShow: LiveData<String> get() = _quanityToShow as LiveData<String>
+
+    private val _nameToShow: MutableLiveData<String> = MutableLiveData()
+    val nameToShow: LiveData<String> get() = _nameToShow as LiveData<String>
+
+    private val _shouldFinish: MutableLiveData<Unit> = MutableLiveData()
+    val shouldFinish: LiveData<Unit> get() = _shouldFinish as LiveData<Unit>
+
 
     init {
-        nameError.value = false
-        quanityError.value = false
-        shouldFinish.value = false
+        _nameError.value = false
+        _quanityError.value = false
 
 
         if (shopItem != null) {
-            nameToShow.value = shopItem.name
-            quanityToShow.value = shopItem.quanity.toString()
+            _nameToShow.value = shopItem.name
+            _quanityToShow.value = shopItem.quanity.toString()
         }
         else {
-            nameToShow.value = ""
-            quanityToShow.value = ""
+            _nameToShow.value = ""
+            _quanityToShow.value = ""
         }
     }
 
@@ -62,20 +69,20 @@ class ShopItemViewModel(application: Application, val shopItem: ShopItem?) : And
         val name = parseName(inputName)
         var returnFlag = false
         if (!validateName(name)) {
-            nameError.value = true
+            _nameError.value = true
             returnFlag = true
         }
         else {
-            nameError.value = false
+            _nameError.value = false
         }
 
         val quanity = parseQuanity(inputQuanity)
         if(!validateQuanity(quanity)) {
-            quanityError.value = true
+            _quanityError.value = true
             returnFlag = true
         }
         else {
-            quanityError.value = false
+            _quanityError.value = false
         }
         if (returnFlag) {
             return
@@ -90,7 +97,7 @@ class ShopItemViewModel(application: Application, val shopItem: ShopItem?) : And
                 ShopItem(name, quanity, true)
             )
         }
-        shouldFinish.value = true
+        _shouldFinish.value = Unit
     }
 
     private fun addShopItem(shopItem: ShopItem) {

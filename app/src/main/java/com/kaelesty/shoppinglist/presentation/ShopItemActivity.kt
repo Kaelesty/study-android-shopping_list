@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -31,8 +32,12 @@ class ShopItemActivity : AppCompatActivity() {
     fun initViews() {
         tilName = findViewById(R.id.tilName)
         tilQuanity = findViewById(R.id.tilQuanity)
+
         tietName = findViewById(R.id.tietName)
+        tietName.doOnTextChanged { text, start, before, count ->  tilName.error = "" }
+
         tietQuanity = findViewById(R.id.tietQuanity)
+        tietQuanity.doOnTextChanged { text, start, before, count -> tilQuanity.error = "" }
 
         buttonSave = findViewById(R.id.buttonSave)
         buttonSave.setOnClickListener {
@@ -70,9 +75,7 @@ class ShopItemActivity : AppCompatActivity() {
                 }
             }
             shouldFinish.observe(this@ShopItemActivity) {
-                if (it) {
-                    finish()
-                }
+                finish()
             }
         }
     }
