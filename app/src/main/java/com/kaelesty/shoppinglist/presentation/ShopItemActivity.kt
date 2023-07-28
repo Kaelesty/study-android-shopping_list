@@ -25,7 +25,12 @@ class ShopItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
 
-        launchFragment()
+        if (savedInstanceState == null) {
+            launchFragment()
+            // system automatically recreate fragment when activity was recreated
+            // we need to create fragment manually only if it is activity's first creation
+            // or we will get two duplicate fragments
+        }
 
         //initViews()
         //initViewModel()
@@ -40,7 +45,7 @@ class ShopItemActivity : AppCompatActivity() {
                 )
             )
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragmentContainerShopItem, fragment)
+            .replace(R.id.fragmentContainerShopItem, fragment)
             .commit()
     }
 //

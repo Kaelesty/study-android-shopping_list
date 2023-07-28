@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     private fun initButton() {
         buttonAddShopItem = findViewById(R.id.floatingAddShopItem)
         buttonAddShopItem.setOnClickListener {
-            startCreator()
+            launchFragment()
         }
     }
 
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             onClick = {
-                startEditor(it)
+                launchFragment(it)
             }
         }
 
@@ -93,32 +93,25 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun startCreator() {
-        if (fragmentContainer == null) {
-            startActivity(ShopItemActivity.newIntent(this@MainActivity, null))
-        }
-        else {
-            val fragment = ShopItemFragment.newInstance(
-                ShopItemActivity.ITEM_NOT_FOUND_VAL
-            )
-            supportFragmentManager
-                .beginTransaction()
-                .add(R.id.fragmentContainerShopItem, fragment)
-                .commit()
-        }
-    }
 
-    private fun startEditor(shopItem: ShopItem) {
+    private fun launchFragment(shopItem: ShopItem? = null) {
         if (fragmentContainer == null) {
-            startActivity(ShopItemActivity.newIntent(this@MainActivity, shopItem.id))
+            startActivity(
+                ShopItemActivity.newIntent(
+                    this@MainActivity,
+                    shopItem?.id?:ShopItemActivity.ITEM_NOT_FOUND_VAL
+                )
+            )
         }
         else {
             val fragment = ShopItemFragment.newInstance(
-                shopItem.id
+                shopItem?.id?:ShopItemActivity.ITEM_NOT_FOUND_VAL
             )
+            supportFragmentManager.popBackStack() // To delete prev fragment if it exist
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragmentContainerShopItem, fragment)
+                .replace(R.id.fragmentContainerShopItem, fragment)
+                .addToBackStack(null) // to make fragment closable by pressing "back" instead of activity
                 .commit()
         }
     }
