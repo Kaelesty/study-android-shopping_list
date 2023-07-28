@@ -3,12 +3,15 @@ package com.kaelesty.shoppinglist.presentation
 import android.media.MediaRouter.SimpleCallback
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.FragmentContainer
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.kaelesty.shoppinglist.R
 import com.kaelesty.shoppinglist.databinding.ActivityMainBinding
+import com.kaelesty.shoppinglist.domain.ShopItem
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +23,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var itemTouchHelper: ItemTouchHelper
     private lateinit var buttonAddShopItem: FloatingActionButton
 
+    private var fragmentContainer: FragmentContainerView? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +34,14 @@ class MainActivity : AppCompatActivity() {
         initItemTouchHelper()
         initRecycler()
         initButton()
+
+        fragmentContainer = findViewById(R.id.fragmentContainerShopItem)
     }
 
     private fun initButton() {
         buttonAddShopItem = findViewById(R.id.floatingAddShopItem)
         buttonAddShopItem.setOnClickListener {
-            startActivity(ShopItemActivity.newIntent(this@MainActivity, null))
+            startCreator()
         }
     }
 
@@ -47,7 +54,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             onClick = {
-                startActivity(ShopItemActivity.newIntent(this@MainActivity, it.id))
+                startEditor(it)
             }
         }
 
@@ -84,5 +91,35 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         )
+    }
+
+    private fun startCreator() {
+        if (fragmentContainer == null) {
+            startActivity(ShopItemActivity.newIntent(this@MainActivity, null))
+        }
+        else {
+            val fragment = ShopItemFragment.newInstance(
+                ShopItemActivity.ITEM_NOT_FOUND_VAL
+            )
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragmentContainerShopItem, fragment)
+                .commit()
+        }
+    }
+
+    private fun startEditor(shopItem: ShopItem) {
+        if (fragmentContainer == null) {
+            startActivity(ShopItemActivity.newIntent(this@MainActivity, shopItem.id))
+        }
+        else {
+            val fragment = ShopItemFragment.newInstance(
+                shopItem.id
+            )
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragmentContainerShopItem, fragment)
+                .commit()
+        }
     }
 }

@@ -95,7 +95,15 @@ class ShopItemFragment: Fragment() {
                 }
             }
             shouldFinish.observe(viewLifecycleOwner) {
-                activity?.onBackPressed()
+                if (activity is ShopItemActivity) {
+                    activity?.onBackPressed()
+                }
+                else {
+                    activity?.run {
+                        supportFragmentManager.beginTransaction().remove(this@ShopItemFragment)
+                            .commitAllowingStateLoss()
+                    }
+                }
             }
         }
     }
