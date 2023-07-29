@@ -1,6 +1,5 @@
 package com.kaelesty.shoppinglist.presentation
 
-import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,9 +9,8 @@ import com.kaelesty.shoppinglist.domain.DelShopItemUseCase
 import com.kaelesty.shoppinglist.domain.EditShopItemUseCase
 import com.kaelesty.shoppinglist.domain.GetShopListUseCase
 import com.kaelesty.shoppinglist.domain.ShopItem
-import com.kaelesty.shoppinglist.domain.ShopListRepository
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
 
     private val repository = ShopListRepositoryImpl
 
@@ -21,7 +19,7 @@ class MainViewModel: ViewModel() {
     private val editShopItemUseCase = EditShopItemUseCase(repository)
 
     private val _shopList: MutableLiveData<List<ShopItem>> = MutableLiveData()
-    val shopList: LiveData<List<ShopItem>> get() = _shopList as LiveData<List<ShopItem>>
+    val shopList: LiveData<List<ShopItem>> get() = _shopList
 
     fun loadShopList(owner: LifecycleOwner) {
         getShopListUseCase.getShopList().observe(owner) {

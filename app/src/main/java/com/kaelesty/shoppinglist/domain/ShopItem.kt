@@ -4,7 +4,7 @@ const val SHOP_ITEM_EMPTY_ID = -1
 
 data class ShopItem(
     val name: String,
-    val quanity: Int,
+    val quantity: Int,
     val isActive: Boolean,
     var id: Int = SHOP_ITEM_EMPTY_ID,
 )

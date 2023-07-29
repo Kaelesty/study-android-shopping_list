@@ -4,21 +4,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kaelesty.shoppinglist.domain.ShopItem
 import com.kaelesty.shoppinglist.domain.ShopListRepository
-import kotlin.random.Random
 
-object ShopListRepositoryImpl: ShopListRepository {
+object ShopListRepositoryImpl : ShopListRepository {
 
     private val shopList: MutableLiveData<List<ShopItem>> = MutableLiveData()
     private var autoIncrement = 0
 
     init {
-        shopList.value = ArrayList<ShopItem>()
+        shopList.value = ArrayList()
         for (i in 0..100) {
-            addShopItem(ShopItem(
-                "ShopItem #$i",
-                i,
-                true
-            ))
+            addShopItem(
+                ShopItem(
+                    "ShopItem #$i",
+                    i,
+                    true
+                )
+            )
         }
     }
 
@@ -38,8 +39,8 @@ object ShopListRepositoryImpl: ShopListRepository {
 
     override fun getShopItemById(id: Int): ShopItem {
         val newShopList = shopList.value
-        return newShopList?.find { it.id == id } ?:
-        throw RuntimeException("Shop item wasn't found (by id)")
+        return newShopList?.find { it.id == id }
+            ?: throw RuntimeException("Shop item wasn't found (by id)")
     }
 
     override fun editShopItem(shopItem: ShopItem) {

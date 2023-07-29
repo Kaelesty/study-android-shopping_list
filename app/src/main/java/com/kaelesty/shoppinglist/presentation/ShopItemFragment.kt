@@ -1,14 +1,15 @@
 package com.kaelesty.shoppinglist.presentation
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView.OnEditorActionListener
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.kaelesty.shoppinglist.R
@@ -19,11 +20,13 @@ class ShopItemFragment: Fragment() {
 
     private lateinit var tilName: TextInputLayout
     private lateinit var tietName: TextInputEditText
-    private lateinit var tilQuanity: TextInputLayout
-    private lateinit var tietQuanity: TextInputEditText
+    private lateinit var tilQuantity: TextInputLayout
+    private lateinit var tietQuantity: TextInputEditText
     private lateinit var buttonSave: Button
 
     private var itemId: Int = ITEM_NOT_FOUND_VAL
+
+    private lateinit var onEditingFinishedListener: OnEditingFinishedListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +35,16 @@ class ShopItemFragment: Fragment() {
         // Parameters are parsed in OnCreate and not in OnViewCreated,
         // so that if the necessary parameters are missing, throw an exception
         // before the View is created and not waste time on this
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditorActionListener) {
+            onEditingFinishedListener = context as OnEditingFinishedListener
+        }
+        else {
+            throw RuntimeException("Activity must implement OnEditingFinishedListener")
+        }
     }
 
     override fun onCreateView(
@@ -49,19 +62,19 @@ class ShopItemFragment: Fragment() {
         initViewModel()
     }
 
-    fun initViews(view: View) {
+    private fun initViews(view: View) {
         tilName = view.findViewById(R.id.tilName)
-        tilQuanity = view.findViewById(R.id.tilQuanity)
+        tilQuantity = view.findViewById(R.id.tilQuanity)
 
         tietName = view.findViewById(R.id.tietName)
-        tietName.doOnTextChanged { text, start, before, count ->  tilName.error = "" }
+        tietName.doOnTextChanged { _, _, _, _ ->  tilName.error = "" }
 
-        tietQuanity = view.findViewById(R.id.tietQuanity)
-        tietQuanity.doOnTextChanged { text, start, before, count -> tilQuanity.error = "" }
+        tietQuantity = view.findViewById(R.id.tietQuanity)
+        tietQuantity.doOnTextChanged { _, _, _, _ -> tilQuantity.error = "" }
 
         buttonSave = view.findViewById(R.id.buttonSave)
         buttonSave.setOnClickListener {
-            viewModel.save(tietName.text.toString(), tietQuanity.text.toString())
+            viewModel.save(tietName.text.toString(), tietQuantity.text.toString())
         }
     }
 
@@ -75,8 +88,8 @@ class ShopItemFragment: Fragment() {
             nameToShow.observe(viewLifecycleOwner) {
                 tietName.setText(it)
             }
-            quanityToShow.observe(viewLifecycleOwner) {
-                tietQuanity.setText(it)
+            quantityToShow.observe(viewLifecycleOwner) {
+                tietQuantity.setText(it)
             }
             nameError.observe(viewLifecycleOwner) {
                 if (it) {
@@ -86,24 +99,16 @@ class ShopItemFragment: Fragment() {
                     tilName.error = ""
                 }
             }
-            quanityError.observe(viewLifecycleOwner) {
+            quantityError.observe(viewLifecycleOwner) {
                 if (it) {
-                    tilQuanity.error = QUANITY_ERROR_MESSAGE
+                    tilQuantity.error = QUANTITY_ERROR_MESSAGE
                 }
                 else {
-                    tilQuanity.error = ""
+                    tilQuantity.error = ""
                 }
             }
             shouldFinish.observe(viewLifecycleOwner) {
-                if (activity is ShopItemActivity) {
-                    activity?.onBackPressed()
-                }
-                else {
-                    activity?.run {
-                        supportFragmentManager.beginTransaction().remove(this@ShopItemFragment)
-                            .commitAllowingStateLoss()
-                    }
-                }
+                onEditingFinishedListener.onEditingFinished()
             }
         }
     }
@@ -114,7 +119,7 @@ class ShopItemFragment: Fragment() {
         const val ITEM_NOT_FOUND_VAL = -1
 
         const val NAME_ERROR_MESSAGE = "Wrong name"
-        const val QUANITY_ERROR_MESSAGE = "Wrong quanity"
+        const val QUANTITY_ERROR_MESSAGE = "Wrong quantity"
 
         fun newInstance(itemId: Int): ShopItemFragment {
             return ShopItemFragment().apply {
@@ -124,6 +129,10 @@ class ShopItemFragment: Fragment() {
 //                because the parameters passed through the constructor will be lost
 //                when the fragment is recreated (for example, when the screen is flipped)
             }
+        }
+
+        interface OnEditingFinishedListener {
+            fun onEditingFinished()
         }
     }
 }

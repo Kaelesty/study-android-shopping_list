@@ -1,21 +1,16 @@
 package com.kaelesty.shoppinglist.presentation
 
-import android.media.MediaRouter.SimpleCallback
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.fragment.app.FragmentContainer
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.kaelesty.shoppinglist.R
-import com.kaelesty.shoppinglist.databinding.ActivityMainBinding
 import com.kaelesty.shoppinglist.domain.ShopItem
 
-class MainActivity : AppCompatActivity() {
-
-    private var TAG = "MainActivity"
+class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFinishedListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ShopListAdapter
@@ -93,6 +88,9 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    override fun onEditingFinished() {
+        supportFragmentManager.popBackStack()
+    }
 
     private fun launchFragment(shopItem: ShopItem? = null) {
         if (fragmentContainer == null) {
@@ -107,6 +105,7 @@ class MainActivity : AppCompatActivity() {
             val fragment = ShopItemFragment.newInstance(
                 shopItem?.id?:ShopItemActivity.ITEM_NOT_FOUND_VAL
             )
+
             supportFragmentManager.popBackStack() // To delete prev fragment if it exist
             supportFragmentManager
                 .beginTransaction()

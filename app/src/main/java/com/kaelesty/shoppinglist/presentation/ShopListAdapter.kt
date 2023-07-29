@@ -4,24 +4,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.constraintlayout.motion.widget.OnSwipe
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.kaelesty.shoppinglist.R
-import com.kaelesty.shoppinglist.databinding.ShopItemActiveBinding
-import com.kaelesty.shoppinglist.databinding.ShopItemUnactiveBinding
 import com.kaelesty.shoppinglist.domain.ShopItem
 
-class ShopListAdapter: ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder>(
+class ShopListAdapter : ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder>(
 
-    object: DiffUtil.ItemCallback<ShopItem>() {
-        override fun areItemsTheSame(oldItem: ShopItem, newItem: ShopItem)
-            = oldItem.id == newItem.id
+    object : DiffUtil.ItemCallback<ShopItem>() {
+        override fun areItemsTheSame(oldItem: ShopItem, newItem: ShopItem) =
+            oldItem.id == newItem.id
 
-        override fun areContentsTheSame(oldItem: ShopItem, newItem: ShopItem)
-            = oldItem == newItem
+        override fun areContentsTheSame(oldItem: ShopItem, newItem: ShopItem) = oldItem == newItem
     }
 
 ) {
@@ -38,9 +33,11 @@ class ShopListAdapter: ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder>
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
         return ShopItemViewHolder(
             LayoutInflater.from(parent.context).inflate
-                (viewType,
+                (
+                viewType,
                 parent,
-                false)
+                false
+            )
         )
     }
 
@@ -48,7 +45,7 @@ class ShopListAdapter: ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder>
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
         val shopItem = currentList[position]
         holder.textViewTitle.text = shopItem.name
-        holder.textViewQuanity.text = shopItem.quanity.toString()
+        holder.textViewQuanity.text = shopItem.quantity.toString()
 
         onLongClick?.let {
             holder.view.setOnLongClickListener {
@@ -69,7 +66,7 @@ class ShopListAdapter: ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder>
         submitList(newData)
     }
 
-    inner class ShopItemViewHolder(itemView: View): ViewHolder(itemView) {
+    inner class ShopItemViewHolder(itemView: View) : ViewHolder(itemView) {
 
         val view = itemView
         var textViewTitle = itemView.findViewById<TextView>(R.id.textViewShopItemTitle)
