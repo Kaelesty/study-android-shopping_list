@@ -4,10 +4,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.kaelesty.shoppinglist.R
+import com.kaelesty.shoppinglist.databinding.ShopItemActiveBinding
+import com.kaelesty.shoppinglist.databinding.ShopItemUnactiveBinding
 import com.kaelesty.shoppinglist.domain.ShopItem
 
 class ShopListAdapter : ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder>(
@@ -31,9 +35,10 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder
     var onSwipe: ((ShopItem) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
+
         return ShopItemViewHolder(
-            LayoutInflater.from(parent.context).inflate
-                (
+            DataBindingUtil.inflate<ViewDataBinding>(
+                LayoutInflater.from(parent.context),
                 viewType,
                 parent,
                 false
@@ -44,34 +49,36 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder
 
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
         val shopItem = currentList[position]
-        holder.textViewTitle.text = shopItem.name
-        holder.textViewQuanity.text = shopItem.quantity.toString()
 
-        onLongClick?.let {
-            holder.view.setOnLongClickListener {
-                it(shopItem)
-                false
+        with(holder.binding) {
+
+            when (this) {
+                is ShopItemUnactiveBinding -> {
+                    textViewShopItemTitle.text = shopItem.name
+                    textViewShopItemQuanity.text = shopItem.quantity.toString()
+                }
+                is ShopItemActiveBinding -> {
+                    textViewShopItemTitle.text = shopItem.name
+                    textViewShopItemQuanity.text = shopItem.quantity.toString()
+                }
+            }
+
+            onLongClick?.let {
+                root.setOnLongClickListener {
+                    it(shopItem)
+                    false
+                }
+            }
+
+            onClick?.let {
+                root.setOnClickListener {
+                    it(shopItem)
+                }
             }
         }
-
-        onClick?.let {
-            holder.view.setOnClickListener {
-                it(shopItem)
-            }
-        }
-
     }
 
-    fun setData(newData: List<ShopItem>) {
-        submitList(newData)
-    }
-
-    inner class ShopItemViewHolder(itemView: View) : ViewHolder(itemView) {
-
-        val view = itemView
-        var textViewTitle = itemView.findViewById<TextView>(R.id.textViewShopItemTitle)
-        var textViewQuanity = itemView.findViewById<TextView>(R.id.textViewShopItemQuanity)
-    }
+    inner class ShopItemViewHolder(val binding: ViewDataBinding) : ViewHolder(binding.root)
 
     override fun getItemViewType(position: Int): Int {
         return if (currentList[position].isActive) VIEW_TYPE_ACTIVE else VIEW_TYPE_UNACTIVE

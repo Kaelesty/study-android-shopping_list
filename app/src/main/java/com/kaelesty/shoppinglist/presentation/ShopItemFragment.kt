@@ -13,20 +13,17 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.kaelesty.shoppinglist.R
+import com.kaelesty.shoppinglist.databinding.FragmentShopItemBinding
 
 class ShopItemFragment: Fragment() {
 
     private lateinit var viewModel: ShopItemViewModel
 
-    private lateinit var tilName: TextInputLayout
-    private lateinit var tietName: TextInputEditText
-    private lateinit var tilQuantity: TextInputLayout
-    private lateinit var tietQuantity: TextInputEditText
-    private lateinit var buttonSave: Button
-
     private var itemId: Int = ITEM_NOT_FOUND_VAL
 
     private lateinit var onEditingFinishedListener: OnEditingFinishedListener
+
+    private lateinit var binding: FragmentShopItemBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +36,7 @@ class ShopItemFragment: Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnEditorActionListener) {
+        if (context is OnEditingFinishedListener) {
             onEditingFinishedListener = context as OnEditingFinishedListener
         }
         else {
@@ -51,30 +48,28 @@ class ShopItemFragment: Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return layoutInflater.inflate(R.layout.fragment_shop_item, container, false)
+    ): View {
+        binding = FragmentShopItemBinding.inflate(layoutInflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
 
         initViews(view)
         initViewModel()
     }
 
     private fun initViews(view: View) {
-        tilName = view.findViewById(R.id.tilName)
-        tilQuantity = view.findViewById(R.id.tilQuanity)
+        with(binding) {
+            tietName.doOnTextChanged { _, _, _, _ -> tilName.error = "" }
 
-        tietName = view.findViewById(R.id.tietName)
-        tietName.doOnTextChanged { _, _, _, _ ->  tilName.error = "" }
+            tietQuanity.doOnTextChanged { _, _, _, _ -> tilQuanity.error = "" }
 
-        tietQuantity = view.findViewById(R.id.tietQuanity)
-        tietQuantity.doOnTextChanged { _, _, _, _ -> tilQuantity.error = "" }
-
-        buttonSave = view.findViewById(R.id.buttonSave)
-        buttonSave.setOnClickListener {
-            viewModel.save(tietName.text.toString(), tietQuantity.text.toString())
+            buttonSave.setOnClickListener {
+                viewModel.save(tietName.text.toString(), tietQuanity.text.toString())
+            }
         }
     }
 
@@ -85,26 +80,28 @@ class ShopItemFragment: Fragment() {
         ).create(ShopItemViewModel::class.java)
 
         with(viewModel) {
-            nameToShow.observe(viewLifecycleOwner) {
-                tietName.setText(it)
-            }
-            quantityToShow.observe(viewLifecycleOwner) {
-                tietQuantity.setText(it)
-            }
-            nameError.observe(viewLifecycleOwner) {
-                if (it) {
-                    tilName.error = NAME_ERROR_MESSAGE
+            with(binding) {
+                nameToShow.observe(viewLifecycleOwner) {
+                    tietName.setText(it)
                 }
-                else {
-                    tilName.error = ""
+                quantityToShow.observe(viewLifecycleOwner) {
+                    tietQuanity.setText(it)
                 }
-            }
-            quantityError.observe(viewLifecycleOwner) {
-                if (it) {
-                    tilQuantity.error = QUANTITY_ERROR_MESSAGE
+                nameError.observe(viewLifecycleOwner) {
+                    if (it) {
+                        tilName.error = NAME_ERROR_MESSAGE
+                    }
+                    else {
+                        tilName.error = ""
+                    }
                 }
-                else {
-                    tilQuantity.error = ""
+                quantityError.observe(viewLifecycleOwner) {
+                    if (it) {
+                        tilQuanity.error = QUANTITY_ERROR_MESSAGE
+                    }
+                    else {
+                        tilQuanity.error = ""
+                    }
                 }
             }
             shouldFinish.observe(viewLifecycleOwner) {

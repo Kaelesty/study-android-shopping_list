@@ -8,34 +8,33 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.kaelesty.shoppinglist.R
+import com.kaelesty.shoppinglist.databinding.ActivityMainBinding
 import com.kaelesty.shoppinglist.domain.ShopItem
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFinishedListener {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: ShopListAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var itemTouchHelper: ItemTouchHelper
-    private lateinit var buttonAddShopItem: FloatingActionButton
 
-    private var fragmentContainer: FragmentContainerView? = null
+    private lateinit var binding: ActivityMainBinding
+
+    private lateinit var adapter: ShopListAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         initViewModel()
         initItemTouchHelper()
         initRecycler()
         initButton()
-
-        fragmentContainer = findViewById(R.id.fragmentContainerShopItem)
     }
 
     private fun initButton() {
-        buttonAddShopItem = findViewById(R.id.floatingAddShopItem)
-        buttonAddShopItem.setOnClickListener {
+        binding.floatingAddShopItem.setOnClickListener {
             launchFragment()
         }
     }
@@ -53,10 +52,9 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFi
             }
         }
 
-        recyclerView = findViewById(R.id.recyclerViewShipList)
-        recyclerView.adapter = adapter
+        binding.recyclerViewShipList.adapter = adapter
 
-        itemTouchHelper.attachToRecyclerView(recyclerView)
+        itemTouchHelper.attachToRecyclerView(binding.recyclerViewShipList)
     }
 
     private fun initViewModel() {
@@ -93,7 +91,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFi
     }
 
     private fun launchFragment(shopItem: ShopItem? = null) {
-        if (fragmentContainer == null) {
+        if (binding.fragmentContainerShopItem == null) {
             startActivity(
                 ShopItemActivity.newIntent(
                     this@MainActivity,

@@ -5,12 +5,18 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.kaelesty.shoppinglist.R
+import com.kaelesty.shoppinglist.databinding.ActivityShopItemBinding
+import com.kaelesty.shoppinglist.databinding.ShopItemActiveBinding
 
 class ShopItemActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFinishedListener {
 
+    private lateinit var binding: ActivityShopItemBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_shop_item)
+
+        binding = ActivityShopItemBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         if (savedInstanceState == null) {
             launchFragment()
