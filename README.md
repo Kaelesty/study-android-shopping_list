@@ -7,3 +7,4 @@ The purpose of creating the application is to learn the basics of Clean Arcitect
 * Fragments
 * MVVM
 * Clean Architecture
+* Jetpack Data binding
