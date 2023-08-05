@@ -16,7 +16,7 @@ class ShopListRepositoryImpl(application: Application) : ShopListRepository {
     private val dao = db.shopListDao()
 
 
-    override fun addShopItem(shopItem: ShopItem) {
+    override suspend fun addShopItem(shopItem: ShopItem) {
         dao.addShopItem(ShopListMapper.mapEntityToDbModel(shopItem))
     }
 
@@ -28,15 +28,15 @@ class ShopListRepositoryImpl(application: Application) : ShopListRepository {
         }
     }
 
-    override fun getShopItemById(id: Int): ShopItem? {
+    override suspend fun getShopItemById(id: Int): ShopItem? {
         return ShopListMapper.mapDbModelToEntity(dao.getShopItem(id))
     }
 
-    override fun editShopItem(shopItem: ShopItem) {
+    override suspend fun editShopItem(shopItem: ShopItem) {
         addShopItem(shopItem) // Items with same ids will be replaced by Room's OnConflictStrategy
     }
 
-    override fun delShopItem(shopItem: ShopItem) {
+    override suspend fun delShopItem(shopItem: ShopItem) {
         dao.delShopItem(shopItem.id)
     }
 }

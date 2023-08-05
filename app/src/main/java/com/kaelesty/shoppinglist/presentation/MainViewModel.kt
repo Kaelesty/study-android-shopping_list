@@ -5,6 +5,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.kaelesty.shoppinglist.data.ShopListRepositoryImpl
 import com.kaelesty.shoppinglist.domain.AddShopItemUseCase
 import com.kaelesty.shoppinglist.domain.DelShopItemUseCase
@@ -12,6 +13,10 @@ import com.kaelesty.shoppinglist.domain.EditShopItemUseCase
 import com.kaelesty.shoppinglist.domain.GetShopItemByIdUseCase
 import com.kaelesty.shoppinglist.domain.GetShopListUseCase
 import com.kaelesty.shoppinglist.domain.ShopItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application) : ViewModel() {
 
@@ -40,11 +45,15 @@ class MainViewModel(application: Application) : ViewModel() {
     }
 
     fun delShopItem(shopItem: ShopItem) {
-        delShopItemUseCase.delShopItem(shopItem)
+        viewModelScope.launch {
+            delShopItemUseCase.delShopItem(shopItem)
+        }
     }
 
     fun switchShopItemActivation(shopItem: ShopItem) {
         val newShopItem = shopItem.copy(isActive = !shopItem.isActive)
-        editShopItemUseCase.editShopItem(newShopItem)
+        viewModelScope.launch {
+            editShopItemUseCase.editShopItem(newShopItem)
+        }
     }
 }

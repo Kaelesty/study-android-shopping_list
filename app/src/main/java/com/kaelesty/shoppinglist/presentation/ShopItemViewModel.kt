@@ -1,14 +1,20 @@
 package com.kaelesty.shoppinglist.presentation
 
 import android.app.Application
+import androidx.annotation.MainThread
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.kaelesty.shoppinglist.data.ShopListRepositoryImpl
 import com.kaelesty.shoppinglist.domain.AddShopItemUseCase
 import com.kaelesty.shoppinglist.domain.EditShopItemUseCase
 import com.kaelesty.shoppinglist.domain.GetShopItemByIdUseCase
 import com.kaelesty.shoppinglist.domain.ShopItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import java.lang.Exception
 
 class ShopItemViewModel(application: Application, private val shopItemId: Int) :
@@ -16,7 +22,7 @@ class ShopItemViewModel(application: Application, private val shopItemId: Int) :
 
     private val repo: ShopListRepositoryImpl
 
-    private val shopItem: ShopItem?
+    private var shopItem: ShopItem? = null
 
     private val addShopItemUseCase: AddShopItemUseCase
     private val getShopItemUseCase: GetShopItemByIdUseCase
@@ -47,18 +53,18 @@ class ShopItemViewModel(application: Application, private val shopItemId: Int) :
         getShopItemUseCase = GetShopItemByIdUseCase(repo)
         editShopItemUseCase = EditShopItemUseCase(repo)
 
-        shopItem =
-            if (shopItemId != ShopItemFragment.ITEM_NOT_FOUND_VAL)
-                getShopItemUseCase.getShopItemById(shopItemId)
-            else null
-
-
-        if (shopItem != null) {
-            _nameToShow.value = shopItem.name
-            _quantityToShow.value = shopItem.quantity.toString()
-        } else {
-            _nameToShow.value = ""
-            _quantityToShow.value = ""
+        viewModelScope.launch {
+            shopItem =
+                if (shopItemId != ShopItemFragment.ITEM_NOT_FOUND_VAL)
+                    getShopItemUseCase.getShopItemById(shopItemId)
+                else null
+            if (shopItem != null) {
+                _nameToShow.postValue((shopItem as ShopItem).name)
+                _quantityToShow.postValue((shopItem as ShopItem).quantity.toString())
+            } else {
+                _nameToShow.postValue("")
+                _quantityToShow.postValue("")
+            }
         }
     }
 
@@ -83,29 +89,35 @@ class ShopItemViewModel(application: Application, private val shopItemId: Int) :
         if (returnFlag) {
             return
         }
-        if (shopItem != null) {
-            editShopItem(
-                ShopItem(name, quantity, shopItem.isActive, shopItem.id)
-            )
-        } else {
-            addShopItem(
-                ShopItem(name, quantity, true)
-            )
+        viewModelScope.launch {
+            if (shopItem != null) {
+                editShopItem(
+                    ShopItem(name, quantity, (shopItem as ShopItem).isActive, (shopItem as ShopItem).id)
+                )
+            } else {
+                addShopItem(
+                    ShopItem(name, quantity, true)
+                )
+            }
         }
         _shouldFinish.value = Unit
     }
 
     private fun addShopItem(shopItem: ShopItem) {
-        addShopItemUseCase.addShopItem(
-            shopItem
-        )
+        viewModelScope.launch {
+            addShopItemUseCase.addShopItem(
+                shopItem
+            )
+        }
     }
 
 
     private fun editShopItem(shopItem: ShopItem) {
-        editShopItemUseCase.editShopItem(
-            shopItem
-        )
+        viewModelScope.launch {
+            editShopItemUseCase.editShopItem(
+                shopItem
+            )
+        }
     }
 
     private fun parseName(name: String?): String {
