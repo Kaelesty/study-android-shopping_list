@@ -14,11 +14,3 @@ data class ShopItemDbModel(
 	val isActive: Boolean,
 
 )
-{
-	constructor(shopItem: ShopItem) : this(
-		shopItem.id,
-		shopItem.name,
-		shopItem.quantity,
-		shopItem.isActive
-	)
-}

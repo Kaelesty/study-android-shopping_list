@@ -1,63 +1,42 @@
 package com.kaelesty.shoppinglist.data
 
+import android.app.Application
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.kaelesty.shoppinglist.domain.ShopItem
 import com.kaelesty.shoppinglist.domain.ShopListRepository
 
-object ShopListRepositoryImpl : ShopListRepository {
+class ShopListRepositoryImpl(application: Application) : ShopListRepository {
 
-    private val shopList: MutableLiveData<List<ShopItem>> = MutableLiveData()
-    private var autoIncrement = 0
+    private val _shopList: MutableLiveData<List<ShopItem>> = MutableLiveData()
 
-    init {
-        shopList.value = ArrayList()
-        for (i in 0..100) {
-            addShopItem(
-                ShopItem(
-                    "ShopItem #$i",
-                    i,
-                    true
-                )
-            )
-        }
-    }
+
+    private val db = ShopItemDatabase.getInstance(application)
+    private val dao = db.shopListDao()
+
 
     override fun addShopItem(shopItem: ShopItem) {
-        shopItem.id = autoIncrement
-        autoIncrement++
-        val newShopList = shopList.value
-        newShopList as MutableList
-        newShopList.add(shopItem)
-        newShopList.sortBy { it.id }
-        shopList.value = newShopList
+        dao.addShopItem(ShopListMapper.mapEntityToDbModel(shopItem))
     }
 
     override fun getShopList(): LiveData<List<ShopItem>> {
-        return shopList
+        return MediatorLiveData<List<ShopItem>>().apply {
+            addSource(dao.getShopList()) {
+                value = ShopListMapper.mapDbModelListToEntityList(it)
+            }
+        }
     }
 
-    override fun getShopItemById(id: Int): ShopItem {
-        val newShopList = shopList.value
-        return newShopList?.find { it.id == id }
-            ?: throw RuntimeException("Shop item wasn't found (by id)")
+    override fun getShopItemById(id: Int): ShopItem? {
+        return ShopListMapper.mapDbModelToEntity(dao.getShopItem(id))
     }
 
     override fun editShopItem(shopItem: ShopItem) {
-        val newShopList = shopList.value
-        newShopList as MutableList
-        val oldElem = getShopItemById(shopItem.id)
-        newShopList.remove(oldElem)
-        newShopList.add(shopItem)
-        newShopList.sortBy { it.id }
-        shopList.value = newShopList
+        addShopItem(shopItem) // Items with same ids will be replaced by Room's OnConflictStrategy
     }
 
     override fun delShopItem(shopItem: ShopItem) {
-        val newShopList = shopList.value
-        newShopList as MutableList
-        newShopList.remove(shopItem)
-        newShopList.sortBy { it.id }
-        shopList.value = newShopList
+        dao.delShopItem(shopItem.id)
     }
 }

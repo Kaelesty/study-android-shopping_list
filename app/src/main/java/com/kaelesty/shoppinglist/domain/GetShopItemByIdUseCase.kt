@@ -2,7 +2,7 @@ package com.kaelesty.shoppinglist.domain
 
 class GetShopItemByIdUseCase(private val shopListRepository: ShopListRepository) {
 
-    fun getShopItemById(id: Int): ShopItem {
+    fun getShopItemById(id: Int): ShopItem? {
         return shopListRepository.getShopItemById(id)
     }
 }

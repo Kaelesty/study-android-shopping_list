@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFi
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        viewModel = MainVMFactory(application).create(MainViewModel::class.java)
 
         viewModel.loadShopList(this)
 

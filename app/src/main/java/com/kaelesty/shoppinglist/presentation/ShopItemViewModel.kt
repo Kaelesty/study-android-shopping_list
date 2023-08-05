@@ -11,9 +11,16 @@ import com.kaelesty.shoppinglist.domain.GetShopItemByIdUseCase
 import com.kaelesty.shoppinglist.domain.ShopItem
 import java.lang.Exception
 
-class ShopItemViewModel(application: Application, private val shopItem: ShopItem?) :
+class ShopItemViewModel(application: Application, private val shopItemId: Int) :
     AndroidViewModel(application) {
 
+    private val repo: ShopListRepositoryImpl
+
+    private val shopItem: ShopItem?
+
+    private val addShopItemUseCase: AddShopItemUseCase
+    private val getShopItemUseCase: GetShopItemByIdUseCase
+    private val editShopItemUseCase: EditShopItemUseCase
 
     private val _nameError: MutableLiveData<Boolean> = MutableLiveData()
     val nameError: LiveData<Boolean> get() = _nameError
@@ -34,6 +41,17 @@ class ShopItemViewModel(application: Application, private val shopItem: ShopItem
         _nameError.value = false
         _quantityError.value = false
 
+        repo = ShopListRepositoryImpl(application)
+
+        addShopItemUseCase = AddShopItemUseCase(repo)
+        getShopItemUseCase = GetShopItemByIdUseCase(repo)
+        editShopItemUseCase = EditShopItemUseCase(repo)
+
+        shopItem =
+            if (shopItemId != ShopItemFragment.ITEM_NOT_FOUND_VAL)
+                getShopItemUseCase.getShopItemById(shopItemId)
+            else null
+
 
         if (shopItem != null) {
             _nameToShow.value = shopItem.name
@@ -44,18 +62,6 @@ class ShopItemViewModel(application: Application, private val shopItem: ShopItem
         }
     }
 
-    companion object {
-
-        private val addShopItemUseCase = AddShopItemUseCase(ShopListRepositoryImpl)
-        private val getShopItemUseCase = GetShopItemByIdUseCase(ShopListRepositoryImpl)
-        private val editShopItemUseCase = EditShopItemUseCase(ShopListRepositoryImpl)
-        fun createShopItem(itemId: Int): ShopItem? {
-            if (itemId == ShopItemActivity.ITEM_NOT_FOUND_VAL) {
-                return null
-            }
-            return getShopItemUseCase.getShopItemById(itemId)
-        }
-    }
 
     fun save(inputName: String, inputQuantity: String) {
         val name = parseName(inputName)

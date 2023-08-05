@@ -7,6 +7,6 @@ import androidx.lifecycle.ViewModelProvider
 class ShopItemVMFactory(private val application: Application, private val itemId: Int)
     : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ShopItemViewModel(application, ShopItemViewModel.createShopItem(itemId)) as T
+        return ShopItemViewModel(application, itemId) as T
     }
 }
