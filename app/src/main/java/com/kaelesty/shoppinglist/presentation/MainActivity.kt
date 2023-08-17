@@ -8,29 +8,43 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.kaelesty.shoppinglist.R
+import com.kaelesty.shoppinglist.ShopListApp
 import com.kaelesty.shoppinglist.databinding.ActivityMainBinding
 import com.kaelesty.shoppinglist.domain.ShopItem
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFinishedListener {
 
-    private lateinit var viewModel: MainViewModel
+
+    @Inject lateinit var viewModel: MainViewModel
     private lateinit var itemTouchHelper: ItemTouchHelper
 
-    private lateinit var binding: ActivityMainBinding
+    @Inject lateinit var binding: ActivityMainBinding
 
-    private lateinit var adapter: ShopListAdapter
+    @Inject lateinit var adapter: ShopListAdapter
+
+    private val component by lazy {
+        (application as ShopListApp).component
+            .activityComponentFactory()
+            .create(layoutInflater)
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        component.inject(this@MainActivity)
+
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         initViewModel()
         initItemTouchHelper()
         initRecycler()
         initButton()
+
+
+
     }
 
     private fun initButton() {
@@ -40,7 +54,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFi
     }
 
     private fun initRecycler() {
-        adapter = ShopListAdapter()
 
         with(adapter) {
             onLongClick = {
@@ -58,7 +71,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFi
     }
 
     private fun initViewModel() {
-        viewModel = MainVMFactory(application).create(MainViewModel::class.java)
 
         viewModel.loadShopList(this)
 

@@ -5,14 +5,25 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.kaelesty.shoppinglist.R
+import com.kaelesty.shoppinglist.ShopListApp
 import com.kaelesty.shoppinglist.databinding.ActivityShopItemBinding
 import com.kaelesty.shoppinglist.databinding.ShopItemActiveBinding
+import javax.inject.Inject
 
 class ShopItemActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFinishedListener {
 
-    private lateinit var binding: ActivityShopItemBinding
+    @Inject lateinit var binding: ActivityShopItemBinding
+
+    private val component by lazy {
+        (application as ShopListApp).component
+            .activityComponentFactory()
+            .create(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        component.inject(this@ShopItemActivity)
+
         super.onCreate(savedInstanceState)
 
         binding = ActivityShopItemBinding.inflate(layoutInflater)

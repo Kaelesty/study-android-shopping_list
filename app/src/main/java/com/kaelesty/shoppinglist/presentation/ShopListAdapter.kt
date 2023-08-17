@@ -13,8 +13,9 @@ import com.kaelesty.shoppinglist.R
 import com.kaelesty.shoppinglist.databinding.ShopItemActiveBinding
 import com.kaelesty.shoppinglist.databinding.ShopItemUnactiveBinding
 import com.kaelesty.shoppinglist.domain.ShopItem
+import javax.inject.Inject
 
-class ShopListAdapter : ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder>(
+class ShopListAdapter @Inject constructor() : ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder>(
 
     object : DiffUtil.ItemCallback<ShopItem>() {
         override fun areItemsTheSame(oldItem: ShopItem, newItem: ShopItem) =

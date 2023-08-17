@@ -4,16 +4,14 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import com.kaelesty.shoppinglist.di.AppContextQualifier
 import com.kaelesty.shoppinglist.domain.ShopItem
 import com.kaelesty.shoppinglist.domain.ShopListRepository
+import javax.inject.Inject
 
-class ShopListRepositoryImpl(application: Application) : ShopListRepository {
+class ShopListRepositoryImpl @Inject constructor(@AppContextQualifier application: Application) : ShopListRepository {
 
-    private val _shopList: MutableLiveData<List<ShopItem>> = MutableLiveData()
-
-
-    private val db = ShopItemDatabase.getInstance(application)
-    private val dao = db.shopListDao()
+    @Inject lateinit var dao: ShopListDao
 
 
     override suspend fun addShopItem(shopItem: ShopItem) {

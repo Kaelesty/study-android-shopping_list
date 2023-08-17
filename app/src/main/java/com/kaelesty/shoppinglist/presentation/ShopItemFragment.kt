@@ -13,19 +13,31 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.kaelesty.shoppinglist.R
+import com.kaelesty.shoppinglist.ShopListApp
 import com.kaelesty.shoppinglist.databinding.FragmentShopItemBinding
+import javax.inject.Inject
 
 class ShopItemFragment: Fragment() {
 
-    private lateinit var viewModel: ShopItemViewModel
+    @Inject
+    lateinit var viewModel: ShopItemViewModel
 
     private var itemId: Int = ITEM_NOT_FOUND_VAL
 
     private lateinit var onEditingFinishedListener: OnEditingFinishedListener
 
-    private lateinit var binding: FragmentShopItemBinding
+    @Inject lateinit var binding: FragmentShopItemBinding
+
+    private val component by lazy {
+        (requireActivity().application as ShopListApp).component
+            .activityComponentFactory()
+            .create(layoutInflater)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        component.inject(this@ShopItemFragment)
+
         super.onCreate(savedInstanceState)
 
         itemId = requireArguments().getInt(ITEM_ID_EXTRA, ITEM_NOT_FOUND_VAL)
@@ -74,10 +86,10 @@ class ShopItemFragment: Fragment() {
     }
 
     private fun initViewModel() {
-        viewModel = ShopItemVMFactory(
-            requireActivity().application,
-            itemId
-        ).create(ShopItemViewModel::class.java)
+
+        if (itemId != ITEM_NOT_FOUND_VAL) {
+            viewModel.setShopItem(itemId)
+        }
 
         with(viewModel) {
             with(binding) {
