@@ -1,6 +1,7 @@
 package com.kaelesty.shoppinglist.di
 
 import android.app.Application
+import com.kaelesty.shoppinglist.data.ShopListProvider
 import dagger.BindsInstance
 import dagger.Component
 
@@ -15,6 +16,8 @@ import dagger.Component
 interface ApplicationComponent {
 
 	fun activityComponentFactory(): ActivityComponent.Factory
+
+	fun inject(provider: ShopListProvider)
 
 	@Component.Factory
 	interface ApplicationComponentFactory {
