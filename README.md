@@ -11,3 +11,4 @@ The purpose of creating the application is to learn the basics of Clean Arcitect
 * Room
 * Coroutines
 * Dagger2 / Dependency Injection
+* Content Provider
