@@ -59,20 +59,28 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFi
 				null,
 				null,
 			)
+			cursor?.let {
+				cursor.moveToNext()
+				while (true) {
+					val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+					val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+					val count = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"))
+					val enabled = cursor.getInt(cursor.getColumnIndexOrThrow("isActive")) > 0
+					// it cant work with booleans. int > 0 means true
+					val shopItemDbModel = ShopItemDbModel(
+						id, name, count, enabled
+					)
 
-			while (cursor?.moveToNext() != null) {
-				val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
-				val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
-				val count = cursor.getInt(cursor.getColumnIndexOrThrow("quantity"))
-				val enabled = cursor.getInt(cursor.getColumnIndexOrThrow("isActive")) > 0
-				// it cant work with booleans. int > 0 means true
-				val shopItemDbModel = ShopItemDbModel(
-					id, name, count, enabled
-				)
 
+					Log.d("ShopListProvider", shopItemDbModel.toString())
 
-				Log.d("ShopListProvider", shopItemDbModel.toString())
+					if (!cursor.moveToNext()) {
+						break
+					}
+				}
 			}
+
+			cursor?.close()
 		}
 	}
 

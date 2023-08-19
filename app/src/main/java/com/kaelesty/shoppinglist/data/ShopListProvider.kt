@@ -7,7 +7,9 @@ import android.database.Cursor
 import android.net.Uri
 import android.util.Log
 import com.kaelesty.shoppinglist.ShopListApp
+import com.kaelesty.shoppinglist.domain.ShopItem
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 class ShopListProvider : ContentProvider() {
 
@@ -15,19 +17,19 @@ class ShopListProvider : ContentProvider() {
 		(context as ShopListApp).component
 	}
 
-	@Inject lateinit var dao: ShopListDao
+	@Inject
+	lateinit var dao: ShopListDao
 
 	companion object {
 
 		const val AUTHORITY = "com.kaelesty.shoppinglist"
-		const val WRONG_QUERY = -1
+		const val WRONG_QUERY = - 1
 		const val GET_SHOP_ITEMS_QUERY = 100
-		const val GET_SHOP_ITEM_BYID_QUERY = 101
+
 	}
 
 	private val uriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
 		addURI(AUTHORITY, "shop_items", GET_SHOP_ITEMS_QUERY)
-		addURI(AUTHORITY, "shop_items/*", GET_SHOP_ITEM_BYID_QUERY)
 	}
 
 	override fun onCreate(): Boolean {
@@ -43,17 +45,12 @@ class ShopListProvider : ContentProvider() {
 		p4: String?
 	): Cursor? {
 
-		val code = uriMatcher.match(uri)
-		return when (code) {
+		return when (uriMatcher.match(uri)) {
 			GET_SHOP_ITEMS_QUERY -> {
 				Log.d("ShopListProvider", GET_SHOP_ITEMS_QUERY.toString())
 				dao.getShopListCursor()
 			}
 
-			GET_SHOP_ITEM_BYID_QUERY -> {
-				Log.d("ShopListProvider", GET_SHOP_ITEM_BYID_QUERY.toString())
-				null
-			}
 			else -> {
 				Log.d("ShopListProvider", WRONG_QUERY.toString())
 				null
@@ -65,8 +62,24 @@ class ShopListProvider : ContentProvider() {
 		TODO("Not yet implemented")
 	}
 
-	override fun insert(p0: Uri, p1: ContentValues?): Uri? {
-		TODO("Not yet implemented")
+	override fun insert(uri: Uri, values: ContentValues?): Uri? {
+		when (uriMatcher.match(uri)) {
+			GET_SHOP_ITEMS_QUERY -> {
+				if (values == null) return null
+
+				val shopItem = ShopItem(
+					values.getAsString(ShopItemDbModelKeys.NAME_KEY),
+					values.getAsInteger(ShopItemDbModelKeys.QUANTITY_KEY),
+					values.getAsBoolean(ShopItemDbModelKeys.IS_ACTIVE_KEY),
+					values.getAsInteger(ShopItemDbModelKeys.ID_KEY),
+				)
+
+				thread {
+					dao.addShopItem(ShopListMapper.mapEntityToDbModel(shopItem))
+				}
+			}
+		}
+		return null
 	}
 
 	override fun delete(p0: Uri, p1: String?, p2: Array<out String>?): Int {
