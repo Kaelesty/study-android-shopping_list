@@ -50,6 +50,10 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFi
 		initRecycler()
 		initButton()
 
+	}
+
+	private fun askItemsViaContentProvider() {
+		// sample code, unused
 		thread {
 			val cursor = contentResolver.query(
 				Uri.parse("content://com.kaelesty.shoppinglist/shop_items"),
@@ -132,6 +136,13 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.Companion.OnEditingFi
 
 				override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
 					viewModel.delShopItem(adapter.currentList[viewHolder.adapterPosition])
+//					thread {
+//						contentResolver.delete(
+//							Uri.parse("content://com.kaelesty.shoppinglist/shop_items"),
+//							null,
+//							arrayOf(adapter.currentList[viewHolder.adapterPosition].id.toString())
+//						)
+//					}
 				}
 			}
 		)
