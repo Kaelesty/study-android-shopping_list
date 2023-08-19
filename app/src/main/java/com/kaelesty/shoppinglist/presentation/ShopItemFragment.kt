@@ -1,6 +1,8 @@
 package com.kaelesty.shoppinglist.presentation
 
+import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +16,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.kaelesty.shoppinglist.R
 import com.kaelesty.shoppinglist.ShopListApp
+import com.kaelesty.shoppinglist.data.ShopItemDbModelKeys
 import com.kaelesty.shoppinglist.databinding.FragmentShopItemBinding
 import javax.inject.Inject
 
@@ -81,6 +84,15 @@ class ShopItemFragment: Fragment() {
 
             buttonSave.setOnClickListener {
                 viewModel.save(tietName.text.toString(), tietQuanity.text.toString())
+//                context?.contentResolver?.insert(
+//                    Uri.parse("content://com.kaelesty.shoppinglist/shop_items"),
+//                    ContentValues().apply {
+//                        put(ShopItemDbModelKeys.NAME_KEY, tietName.text.toString())
+//                        put(ShopItemDbModelKeys.QUANTITY_KEY, tietQuanity.text.toString().toInt())
+//                        put(ShopItemDbModelKeys.IS_ACTIVE_KEY, true)
+//                        put(ShopItemDbModelKeys.ID_KEY, 0)
+//                    }
+//                )
             }
         }
     }

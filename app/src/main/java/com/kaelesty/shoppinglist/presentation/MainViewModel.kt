@@ -27,6 +27,8 @@ class MainViewModel @Inject constructor(
     val editShopItemUseCase: EditShopItemUseCase
 ) : ViewModel() {
 
+    private val scope = CoroutineScope(Dispatchers.IO)
+
     private val _shopList: MutableLiveData<List<ShopItem>> = MutableLiveData()
     val shopList: LiveData<List<ShopItem>> get() = _shopList
 
@@ -37,7 +39,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun delShopItem(shopItem: ShopItem) {
-        viewModelScope.launch {
+        scope.launch {
             delShopItemUseCase.delShopItem(shopItem)
         }
     }
